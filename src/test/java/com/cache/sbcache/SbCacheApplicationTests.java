@@ -2,6 +2,8 @@ package com.cache.sbcache;
 
 import com.cache.sbcache.bean.Employee;
 import com.cache.sbcache.mapper.EmployeeMaper;
+import com.google.common.hash.BloomFilter;
+import com.google.common.hash.Funnels;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @RunWith(SpringRunner.class)
@@ -49,10 +53,25 @@ public class SbCacheApplicationTests {
 		System.out.println(employee.toString());
 	}
 
+
+	//布隆过滤器
 	@Test
-	public void createLock(){
+	public void bloomFilter(){
+		int size = 1000000;
 
+		BloomFilter<Integer> bloomFilter = BloomFilter.create(Funnels.integerFunnel(), size, 0.001);
 
+		for (int i =  1; i <= size; i++){
+			bloomFilter.put(i);
+		}
+
+		List<Integer> list = new ArrayList<Integer>(10000);
+		for(int i = size + 10000; i < size + 20000; i++ ){
+			if(bloomFilter.mightContain(i)){
+				list.add(i);
+			}
+		}
+		System.out.println("误判的数量:" + list.size());
 	}
 
 }
