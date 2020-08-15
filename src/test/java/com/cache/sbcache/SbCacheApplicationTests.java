@@ -6,6 +6,8 @@ import com.google.common.hash.BloomFilter;
 import com.google.common.hash.Funnels;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.redisson.Redisson;
+import org.redisson.api.RLock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -30,6 +32,9 @@ public class SbCacheApplicationTests {
 
 	@Autowired
 	RedisTemplate<Object,Employee> employeeRedisTemplate;
+
+	@Autowired
+	Redisson redisson;
 
 
 	@Test
@@ -72,6 +77,19 @@ public class SbCacheApplicationTests {
 			}
 		}
 		System.out.println("误判的数量:" + list.size());
+	}
+
+
+	@Test
+	public void redissonLock(){
+		String lockKey = "lockKey";
+		RLock redissonLock = redisson.getLock(lockKey);
+		redissonLock.lock(10, TimeUnit.SECONDS);
+
+		System.out.println("业务处理.......");
+
+		redissonLock.unlock();
+		System.out.println("解锁");
 	}
 
 }

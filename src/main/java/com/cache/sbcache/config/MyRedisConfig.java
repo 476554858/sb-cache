@@ -3,6 +3,9 @@ package com.cache.sbcache.config;
 
 import com.cache.sbcache.bean.Department;
 import com.cache.sbcache.bean.Employee;
+import org.redisson.Redisson;
+import org.redisson.config.Config;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -15,6 +18,9 @@ import java.net.UnknownHostException;
 
 @Configuration
 public class MyRedisConfig {
+
+    @Value("${spring.redis.host}")
+    private String redisHost;
 
     @Bean
     public RedisTemplate<Object, Employee> empRedisTemplate(
@@ -61,6 +67,14 @@ public class MyRedisConfig {
         cacheManager.setUsePrefix(true);
 
         return cacheManager;
+    }
+
+    @Bean
+    public Redisson redisson(){
+        //此为单机模式 redisHost
+        Config config = new Config();
+        config.useSingleServer().setAddress("redis://" + redisHost + ":6379").setDatabase(0);
+        return (Redisson) Redisson.create(config);
     }
 
 
