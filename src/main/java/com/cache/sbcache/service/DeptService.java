@@ -1,6 +1,6 @@
 package com.cache.sbcache.service;
 
-import com.cache.sbcache.bean.Department;
+import com.cache.sbcache.pojo.Department;
 import com.cache.sbcache.mapper.DepartmentMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

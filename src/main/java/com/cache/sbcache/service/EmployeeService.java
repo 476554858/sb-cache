@@ -1,6 +1,6 @@
 package com.cache.sbcache.service;
 
-import com.cache.sbcache.bean.Employee;
+import com.cache.sbcache.pojo.Employee;
 import com.cache.sbcache.mapper.EmployeeMaper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.*;

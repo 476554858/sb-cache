@@ -1,6 +1,6 @@
 package com.cache.sbcache.mapper;
 
-import com.cache.sbcache.bean.Department;
+import com.cache.sbcache.pojo.Department;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 

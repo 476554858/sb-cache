@@ -1,6 +1,6 @@
 package com.cache.sbcache.mapper;
 
-import com.cache.sbcache.bean.Employee;
+import com.cache.sbcache.pojo.Employee;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;

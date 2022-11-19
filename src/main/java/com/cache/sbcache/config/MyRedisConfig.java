@@ -1,8 +1,11 @@
 package com.cache.sbcache.config;
 
 
-import com.cache.sbcache.bean.Department;
-import com.cache.sbcache.bean.Employee;
+import com.cache.sbcache.pojo.Department;
+import com.cache.sbcache.pojo.Employee;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.redisson.Redisson;
 import org.redisson.config.Config;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +16,8 @@ import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.net.UnknownHostException;
 
@@ -21,6 +26,25 @@ public class MyRedisConfig {
 
     @Value("${spring.redis.host}")
     private String redisHost;
+
+    @Primary
+    @Bean
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory factory){
+        RedisTemplate<String, Object> template = new RedisTemplate<String, Object>();
+        RedisSerializer<String> serializer = new StringRedisSerializer();
+        Jackson2JsonRedisSerializer jsonRedisSerializer = new Jackson2JsonRedisSerializer(Object.class);
+        ObjectMapper om = new ObjectMapper();
+        om.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
+        om.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
+        jsonRedisSerializer.setObjectMapper(om);
+        template.setDefaultSerializer(jsonRedisSerializer);
+        template.setConnectionFactory(factory);
+        template.setKeySerializer(serializer);
+        template.setHashValueSerializer(jsonRedisSerializer);
+        template.setValueSerializer(jsonRedisSerializer);
+        template.afterPropertiesSet();
+        return template;
+    }
 
     @Bean
     public RedisTemplate<Object, Employee> empRedisTemplate(
@@ -32,6 +56,7 @@ public class MyRedisConfig {
         template.setDefaultSerializer(ser);
         return template;
     }
+
     @Bean
     public RedisTemplate<Object, Department> deptRedisTemplate(
             RedisConnectionFactory redisConnectionFactory)
@@ -42,8 +67,6 @@ public class MyRedisConfig {
         template.setDefaultSerializer(ser);
         return template;
     }
-
-
 
     //CacheManagerCustomizers可以来定制缓存的一些规则
     @Primary  //将某个缓存管理器作为默认的
@@ -71,9 +94,10 @@ public class MyRedisConfig {
 
     @Bean
     public Redisson redisson(){
-        //此为单机模式 redisHost
         Config config = new Config();
-        config.useSingleServer().setAddress("redis://" + redisHost + ":6379").setDatabase(0);
+        //用sentinelSever可以设置多个redis连接
+//       config.useSentinelServers().addSentinelAddress("redis://" + redisHost + ":8888", "redis://" + redisHost + ":8889");
+        config.useSingleServer().setAddress("redis://" + redisHost + ":6379");
         return (Redisson) Redisson.create(config);
     }
 

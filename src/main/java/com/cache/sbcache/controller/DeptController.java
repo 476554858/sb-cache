@@ -1,6 +1,6 @@
 package com.cache.sbcache.controller;
 
-import com.cache.sbcache.bean.Department;
+import com.cache.sbcache.pojo.Department;
 import com.cache.sbcache.service.DeptService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
